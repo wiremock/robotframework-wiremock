@@ -1,5 +1,4 @@
 *** Settings ***
-
 Library  String
 Library  Collections
 Library  RequestsLibrary
@@ -9,7 +8,6 @@ Test Teardown  Reset Wiremock
 
 
 *** Variables ***
-
 ${WIREMOCK_URL}
 ${ENDPOINT}  /endpoint
 &{BODY}  var1=value1  var2=value2
@@ -20,7 +18,6 @@ ${MOCK_DATA}  {"request": ${MOCK_REQ}, "response": ${MOCK_RSP}}
 
 
 *** Test Cases ***
-
 Success On Expected GET
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
     &{rsp}=  Create Mock Response  status=200
@@ -78,7 +75,6 @@ Success On Default GET Mapping With Response Body
     Send GET Expect Success  ${ENDPOINT}  response_headers=${HEADERS}  response_body=${BODY}
 
 *** Keywords ***
-
 Create Sessions
     Create Session  server  ${WIREMOCK_URL}
     Create Mock Session  ${WIREMOCK_URL}
