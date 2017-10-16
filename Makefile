@@ -14,11 +14,11 @@ setup: ## Setup dev environment
 	sudo pip install -r requirements.txt
 
 .PHONY: wiremock/run
-server/run: ## Run wiremock
+wiremock/run: ## Run wiremock
 	ROBOT_ARGS=$(ROBOT_ARGS) docker-compose up -d $(WIREMOCK)
 
 .PHONY: wiremock/stop
-server/stop: ## Stop wiremock
+wiremock/stop: ## Stop wiremock
 	docker-compose down
 
 .PHONY: tester/test
