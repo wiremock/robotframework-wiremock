@@ -1,0 +1,17 @@
+version: '2'
+services:
+  wiremock:
+    image: rodolpheche/wiremock:2.9.0
+  tester:
+    build:
+      context: .
+      dockerfile: resources/docker/tester/Dockerfile
+    volumes:
+      - ./src:/home/robot/src
+      - ./tests/robot/tests:/home/robot/tests
+      - ./tests/robot/logs:/home/robot/logs
+    environment:
+      - WIREMOCK_URL=http://wiremock:8080
+      - ROBOT_ARGS
+    depends_on:
+      - wiremock

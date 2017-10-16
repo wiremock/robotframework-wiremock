@@ -1,0 +1,8 @@
+*.pyc
+*.swp
+*.log
+.cache/
+logs
+dist
+MANIFEST
+!.gitkeep
