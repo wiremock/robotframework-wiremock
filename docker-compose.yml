@@ -7,7 +7,6 @@ services:
       context: .
       dockerfile: resources/docker/tester/Dockerfile
     volumes:
-      - ./src:/home/robot/src
       - ./tests/robot/tests:/home/robot/tests
       - ./tests/robot/logs:/home/robot/logs
     environment:

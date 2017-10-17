@@ -25,7 +25,7 @@ wiremock/stop: ## Stop wiremock
 
 .PHONY: tester/test
 tester/test: ## Run integration tests
-	docker-compose up $(COMPOSE_ARGS) $(TESTER)
+	docker-compose up --build --force-recreate $(TESTER)
 
 .PHONY: lint
 lint: ## Run static code analysis

@@ -3,7 +3,7 @@ import json
 from urllib.parse import urljoin
 from robot.api import logger
 
-from version import VERSION
+from .version import VERSION
 
 __version__ = VERSION
 

@@ -2,7 +2,7 @@
 Library  String
 Library  Collections
 Library  RequestsLibrary
-Library  ../src/WireMockLibrary/WireMockLibrary.py
+Library  WireMockLibrary
 Suite Setup  Create Sessions
 Test Teardown  Reset Wiremock
 
