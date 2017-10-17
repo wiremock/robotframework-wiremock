@@ -7,5 +7,4 @@ setup(name='robotframework-wiremock',
       description='Robot framework library for WireMock',
       author='Timo Yrjola',
       author_email='timo.yrjola@gmail.com',
-      classifiers=[],
-      install_requires=['requests'])
+      classifiers=[])

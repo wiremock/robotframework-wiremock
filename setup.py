@@ -12,5 +12,4 @@ setup(name='robotframework-wiremock',
       url='https://github.com/tyrjola/robotframework-wiremock',
       download_url='https://github.com/tyrjola/robotframework-wiremock/archive/{}.tar.gz'.format(VERSION),
       keywords='testing robotframework wiremock',
-      classifiers=[],
-      install_requires=['requests'])
+      classifiers=[])
