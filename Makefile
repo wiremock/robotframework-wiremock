@@ -1,6 +1,8 @@
 WIREMOCK = wiremock
 TESTER = tester
 
+VERSION ?= $(shell grep -o "\([0-9]\+\.\)\+[0-9]\+" src/WireMockLibrary/version.py)
+
 .DEFAULT_GOAL := help
 .PHONY: help
 help: ## Print help
@@ -33,3 +35,7 @@ lint: ## Run static code analysis
 release: ## Release package to PyPI
 	python setup.py sdist
 	twine upload dist/*
+
+.PHONY: version/tag
+version/tag: ## Tag HEAD with new version tag
+	git tag -a $(VERSION) -m "$(VERSION)"
