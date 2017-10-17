@@ -3,13 +3,20 @@ import json
 from urllib.parse import urljoin
 from robot.api import logger
 
+from version import VERSION
 
-class Keywords(object):
+__version__ = VERSION
 
-    ROBOT_LIBRARY_SCOPE = 'TEST SUITE'
+
+class WireMockLibrary(object):
+
+    ROBOT_LIBRARY_SCOPE = 'GLOBAL'
+    ROBOT_LIBRARY_VERSION = __version__
 
     def create_mock_session(self, base_url):
         """Create an HTTP session towards wiremock"""
+        logger.debug("robotframework-wiremock libary version: {}".format(__version__))
+
         self.base_url = base_url
         self.session = requests.Session()
 
