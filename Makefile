@@ -34,7 +34,7 @@ lint: ## Run static code analysis
 .PHONY: release
 release: ## Release package to PyPI
 	python setup.py sdist
-	twine upload dist/*
+	twine upload dist/robotframework-wiremock-$(VERSION).tar.gz
 
 .PHONY: version/tag
 version/tag: ## Tag HEAD with new version tag
