@@ -28,6 +28,7 @@ Prerequisites:
 * docker-compose (to run integration tests)
 * flake8 (for static code analysis)
 * twine (release)
+* robot-framework (for doc generation)
 
 Install prerequisites:
 
