@@ -17,9 +17,9 @@ Add library to settings section:
 Library  WireMockLibrary
 ```
 
-Keyword documentation: WIP --> link will be added here
+[Keyword documentation for the latest release](https://tyrjola.github.io/docs/robotframework-wiremock.html)
 
-See tests/robot/tests/integration_tests.robot for detailed examples.
+See tests/robot/tests/integration_tests.robot for detailed usage examples.
 
 ## Development
 
