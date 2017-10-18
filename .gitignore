@@ -1,6 +1,7 @@
 *.pyc
 *.swp
 *.log
+*.html
 .cache/
 logs
 dist
