@@ -13,10 +13,10 @@ COPY tests/robot/requirements.txt .
 COPY tests/robot/run_tests.sh .
 COPY resources/scripts/wait-for-url.sh .
 
+## Build development distribution
 RUN python setup.py sdist
 
 RUN pip install -r requirements.txt
-RUN pip install dist/robotframework-wiremock-development.tar.gz
 
 RUN chown -R robot:robot /home/robot
 
