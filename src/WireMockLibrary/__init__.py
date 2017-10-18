@@ -1,1 +1,1 @@
-from .WireMockLibrary import WireMockLibrary
+from .library import WireMockLibrary
