@@ -47,6 +47,6 @@ version/tag: ## Tag HEAD with new version tag
 .PHONY: docs
 docs: ## Generate library docs
 	python -m robot.libdoc src/WireMockLibrary ../tyrjola.github.io/docs/robotframework-wiremock-$(VERSION).html
-	ln -s robotframework-wiremock-$(VERSION).html ../tyrjola.github.io/docs/robotframework-wiremock.html
+	ln -sf robotframework-wiremock-$(VERSION).html ../tyrjola.github.io/docs/robotframework-wiremock.html
 	git -C ../tyrjola.github.io add .
 	git -C ../tyrjola.github.io commit -m "robotframework-wiremock-$(VERSION)"
