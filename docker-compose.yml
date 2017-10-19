@@ -2,6 +2,7 @@ version: '2'
 services:
   wiremock:
     image: rodolpheche/wiremock:2.9.0
+    command: --local-response-templating
   tester:
     build:
       context: .

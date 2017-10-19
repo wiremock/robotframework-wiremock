@@ -65,7 +65,7 @@ class WireMockLibrary(object):
 
         return req
 
-    def create_mock_response(self, status, headers=None, json_body=None):
+    def create_mock_response(self, status, headers=None, json_body=None, template=False):
         """Creates a mock response to be used by wiremock.
 
         Returns the response in a dictionary format.
@@ -75,6 +75,9 @@ class WireMockLibrary(object):
         `headers` is a dictionary of headers to be added to the response
 
         `json_body` is a dictonary of JSON attribute(s) to be added to the response body
+
+        `template` is a boolean value which specifies whether to use templating in the response,
+        e.g. for copying a parameter, header or body value from the request to the response
         """
         rsp = {}
         rsp['status'] = int(status)
@@ -82,6 +85,9 @@ class WireMockLibrary(object):
 
         if json_body:
             rsp['jsonBody'] = json_body
+
+        if template:
+            rsp['transformers'] = ['response-template']
 
         return rsp
 

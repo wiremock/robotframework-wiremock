@@ -74,6 +74,14 @@ Success On Default GET Mapping With Response Body
     Create Default Mock Mapping  GET  ${ENDPOINT}  response_headers=${HEADERS}  response_body=${BODY}
     Send GET Expect Success  ${ENDPOINT}  response_headers=${HEADERS}  response_body=${BODY}
 
+Success On Templated Response
+    &{template_body}=  Create Dictionary  path_var={{request.path.[0]}}
+    &{response_body}=  Create Dictionary  path_var=templated
+    &{req}=  Create Mock Request Matcher  GET  /templated
+    &{rsp}=  Create Mock Response  status=200  json_body=${template_body}  template=${True}
+    Create Mock Mapping  ${req}  ${rsp}
+    Send GET Expect Success  /templated  response_body=${response_body}
+
 *** Keywords ***
 Create Sessions
     Create Session  server  ${WIREMOCK_URL}
@@ -87,6 +95,7 @@ Send GET Expect Success
     ${rsp}=  Get Request  server  ${endpoint}
     Should Be Equal As Strings  ${rsp.status_code}  200
     Run Keyword If   ${response_headers != None}  Verify Response Headers  ${response_headers}  ${rsp.headers}
+    Log  ${rsp.text}
     Run Keyword If   ${response_body != None}  Verify Response Body  ${response_body}  ${rsp.json()}
 
 Send GET Expect Failure
