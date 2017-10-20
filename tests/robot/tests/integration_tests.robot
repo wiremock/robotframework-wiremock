@@ -3,19 +3,20 @@ Library  String
 Library  Collections
 Library  RequestsLibrary
 Library  WireMockLibrary
-Suite Setup  Create Sessions
+Suite Setup  Create Sessions And Default Mappings
 Test Teardown  Reset Wiremock
 
 
 *** Variables ***
 ${WIREMOCK_URL}
+
 ${ENDPOINT}  /endpoint
 &{BODY}  var1=value1  var2=value2
 &{HEADERS}  Content-Type=application/json  Cache-Control=max-age\=3600
+
 ${MOCK_REQ}  {"method": "GET", "url": "${ENDPOINT}"}
 ${MOCK_RSP}  {"status": 200}
 ${MOCK_DATA}  {"request": ${MOCK_REQ}, "response": ${MOCK_RSP}}
-
 
 *** Test Cases ***
 Success On Expected GET
@@ -25,36 +26,30 @@ Success On Expected GET
     Send GET Expect Success  ${ENDPOINT}
 
 Failure On GET With Mismatched Method
-    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
-    &{rsp}=  Create Mock Response  status=200
-    Create Mock Mapping  ${req}  ${rsp}
+    Create Mock Mapping  ${DEF_GET_REQ}  ${DEF_GET_RSP}
     Send POST Expect Failure  ${ENDPOINT}
 
 Failure On GET With Mismatched Endpoint
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
-    &{rsp}=  Create Mock Response  status=200
-    Create Mock Mapping  ${req}  ${rsp}
+    Create Mock Mapping  ${DEF_GET_REQ}  ${DEF_GET_RSP}
     Send GET Expect Failure  /mismatched
 
 Success On Expected GET With Path Pattern
     &{req}=  Create Mock Request Matcher  GET  /endpoint.*  url_match_type=urlPathPattern
-    &{rsp}=  Create Mock Response  status=200
-    Create Mock Mapping  ${req}  ${rsp}
+    Create Mock Mapping  ${req}  ${DEF_GET_RSP}
     Send GET Expect Success  /endpoint-extended/api
 
 Success On Expected GET With Query Parameter Matching
     &{match_params}=  Create Dictionary  param1=value1  param2=value2
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}  query_parameters=${match_params}
-    &{rsp}=  Create Mock Response  status=200
-    Create Mock Mapping  ${req}  ${rsp}
+    Create Mock Mapping  ${req}  ${DEF_GET_RSP}
     Send GET Expect Success  ${ENDPOINT}  request_params=${match_params}
 
 Failure On GET With Mismatched Query Parameters
     &{match_params}=  Create Dictionary  param1=value1  param2=value2
     &{mismatched_params}=  Create Dictionary  param1=mismatch  param2=value2
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}  query_parameters=${match_params}
-    &{rsp}=  Create Mock Response  status=200
-    Create Mock Mapping  ${req}  ${rsp}
+    Create Mock Mapping  ${req}  ${DEF_GET_RSP}
     Send GET Expect Failure  ${ENDPOINT}  request_params=${mismatched_params}
 
 Success On Expected GET With Query Parameter Regex Matching
@@ -63,23 +58,20 @@ Success On Expected GET With Query Parameter Regex Matching
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
     ...                                   query_parameters=${match_params}
     ...                                   regex_matching=${True}
-    &{rsp}=  Create Mock Response  status=200
-    Create Mock Mapping  ${req}  ${rsp}
+    Create Mock Mapping  ${req}  ${DEF_GET_RSP}
     Send GET Expect Success  ${ENDPOINT}  request_params=${params}
 
 Success On Expected GET With Header Matching
     &{match_headers}=  Create Dictionary  header1=value1  header2=value2
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}  headers=${match_headers}
-    &{rsp}=  Create Mock Response  status=200
-    Create Mock Mapping  ${req}  ${rsp}
+    Create Mock Mapping  ${req}  ${DEF_GET_RSP}
     Send GET Expect Success  ${ENDPOINT}  request_headers=${match_headers}
 
 Failure On GET With Mismatched Header
     &{match_headers}=  Create Dictionary  header1=value1  header2=value2
     &{mismatched_headers}=  Create Dictionary  header1=mismatch  header2=value2
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}  headers=${match_headers}
-    &{rsp}=  Create Mock Response  status=200
-    Create Mock Mapping  ${req}  ${rsp}
+    Create Mock Mapping  ${req}  ${DEF_GET_RSP}
     Send GET Expect Failure  ${ENDPOINT}  request_headers=${mismatched_headers}
 
 Success On Expected GET With Specified Data
@@ -87,34 +79,26 @@ Success On Expected GET With Specified Data
     Send GET Expect Success  ${ENDPOINT}
 
 Success On Expected GET With Status Message
-    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
     &{rsp}=  Create Mock Response  status=200  status_message=Ok
-    Create Mock Mapping  ${req}  ${rsp}
+    Create Mock Mapping  ${DEF_GET_REQ}  ${rsp}
     Send GET Expect Success  ${ENDPOINT}  response_status_message=Ok
 
 Success On Expected GET With Response Body
-    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
     &{rsp}=  Create Mock Response  status=200  headers=${HEADERS}  json_body=${BODY}
-    Create Mock Mapping  ${req}  ${rsp}
+    Create Mock Mapping  ${DEF_GET_REQ}  ${rsp}
     Send GET Expect Success  ${ENDPOINT}  response_headers=${HEADERS}  response_body=${BODY}
 
 Success On Expected POST With Body
-    &{req}=  Create Mock Request Matcher  POST  ${ENDPOINT}  json_body=${BODY}
-    &{rsp}=  Create Mock Response  status=200
-    Create Mock Mapping  ${req}  ${rsp}
+    Create Mock Mapping  ${DEF_POST_REQ}  ${DEF_POST_RSP}
     Send POST Expect Success  ${ENDPOINT}  ${BODY}
 
 Failure On POST With Mismatched Body
-    &{req}=  Create Mock Request Matcher  POST  ${ENDPOINT}  json_body=${BODY}
-    &{rsp}=  Create Mock Response  status=200
-    Create Mock Mapping  ${req}  ${rsp}
+    Create Mock Mapping  ${DEF_POST_REQ}  ${DEF_POST_RSP}
     &{mismatched}=  Create Dictionary  var1=mismatch  var2=value2
     Send POST Expect Failure  ${ENDPOINT}  ${mismatched}
 
 Failure On POST With Partial Body
-    &{req}=  Create Mock Request Matcher  POST  ${ENDPOINT}  json_body=${BODY}
-    &{rsp}=  Create Mock Response  status=200
-    Create Mock Mapping  ${req}  ${rsp}
+    Create Mock Mapping  ${DEF_POST_REQ}  ${DEF_POST_RSP}
     &{partial}=  Create Dictionary  var1=value1
     Send POST Expect Failure  ${ENDPOINT}  ${partial}
 
@@ -135,9 +119,18 @@ Success On Templated Response
     Send GET Expect Success  /templated  response_body=${response_body}
 
 *** Keywords ***
-Create Sessions
+Create Sessions And Default Mappings
     Create Session  server  ${WIREMOCK_URL}
     Create Mock Session  ${WIREMOCK_URL}
+
+    &{DEF_GET_REQ}=  Create Mock Request Matcher  GET  ${ENDPOINT}
+    &{DEF_GET_RSP}=  Create Mock Response  status=200
+    &{DEF_POST_REQ}=  Create Mock Request Matcher  POST  ${ENDPOINT}  json_body=${BODY}
+    &{DEF_POST_RSP}=  Create Mock Response  status=201
+    Set Suite Variable  &{DEF_GET_REQ}
+    Set Suite Variable  &{DEF_GET_RSP}
+    Set Suite Variable  &{DEF_POST_REQ}
+    Set Suite Variable  &{DEF_POST_RSP}
 
 Reset Wiremock
     Reset Mock Mappings
@@ -168,7 +161,7 @@ Send GET Expect Failure
     Should Be Equal As Strings  ${rsp.status_code}  ${response_code}
 
 Send POST Expect Success
-    [Arguments]  ${endpoint}=${ENDPOINT}  ${body}=${BODY}  ${response_code}=200
+    [Arguments]  ${endpoint}=${ENDPOINT}  ${body}=${BODY}  ${response_code}=201
     Send POST  ${endpoint}  ${body}  ${response_code}
 
 Send POST Expect Failure
