@@ -44,7 +44,8 @@ class WireMockLibrary(object):
         self.session = requests.Session()
 
     def create_mock_request_matcher(self, method, url, url_match_type='urlPath',
-                                    headers=None, json_body=None):
+                                    query_parameters=None, headers=None, json_body=None,
+                                    regex_matching=False):
         """Creates a mock request matcher to be used by wiremock.
 
         Returns the request matcher in a dictionary format.
@@ -60,18 +61,30 @@ class WireMockLibrary(object):
         - `urlPath` (match url)
         - `urlPathPattern` (match url with regex)
 
+        `query_parameters` is a dictionary of query parameters to match
+
         `headers` is a dictionary containing headers to match (case-insensitive matching)
 
         `json_body` is a dictionary of the json attribute(s) to match
+
+        `regex_matching` is a boolean value which, if enabled, uses regex to match
+        query parameter and header values
         """
         req = {}
         req['method'] = method
         req[url_match_type] = url
 
+        match_type = 'matches' if regex_matching else 'equalTo'
+
+        if query_parameters:
+            req['queryParameters'] = {}
+            for key, value in query_parameters.items():
+                req['queryParameters'][key] = {match_type: value}
+
         if headers:
             req['headers'] = {}
             for key, value in headers.items():
-                req['headers'][key] = {'equalTo': value, 'caseInsensitive': True}
+                req['headers'][key] = {match_type: value, 'caseInsensitive': True}
 
         if json_body:
             req['bodyPatterns'] = [{'equalToJson': json.dumps(json_body),

@@ -42,6 +42,31 @@ Success On Expected GET With Path Pattern
     Create Mock Mapping  ${req}  ${rsp}
     Send GET Expect Success  /endpoint-extended/api
 
+Success On Expected GET With Query Parameter Matching
+    &{match_params}=  Create Dictionary  param1=value1  param2=value2
+    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}  query_parameters=${match_params}
+    &{rsp}=  Create Mock Response  status=200
+    Create Mock Mapping  ${req}  ${rsp}
+    Send GET Expect Success  ${ENDPOINT}  request_params=${match_params}
+
+Failure On GET With Mismatched Query Parameters
+    &{match_params}=  Create Dictionary  param1=value1  param2=value2
+    &{mismatched_params}=  Create Dictionary  param1=mismatch  param2=value2
+    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}  query_parameters=${match_params}
+    &{rsp}=  Create Mock Response  status=200
+    Create Mock Mapping  ${req}  ${rsp}
+    Send GET Expect Failure  ${ENDPOINT}  request_params=${mismatched_params}
+
+Success On Expected GET With Query Parameter Regex Matching
+    &{match_params}=  Create Dictionary  param=(.*)value[0-9]
+    &{params}=  Create Dictionary  param=test-value9
+    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
+    ...                                   query_parameters=${match_params}
+    ...                                   regex_matching=${True}
+    &{rsp}=  Create Mock Response  status=200
+    Create Mock Mapping  ${req}  ${rsp}
+    Send GET Expect Success  ${ENDPOINT}  request_params=${params}
+
 Success On Expected GET With Header Matching
     &{match_headers}=  Create Dictionary  header1=value1  header2=value2
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}  headers=${match_headers}
@@ -119,11 +144,12 @@ Reset Wiremock
 
 Send GET Expect Success
     [Arguments]  ${endpoint}=${ENDPOINT}
+    ...          ${request_params}=${None}
     ...          ${request_headers}=${None}
     ...          ${response_status_message}=${None}
     ...          ${response_headers}=${None}
     ...          ${response_body}=${None}
-    ${rsp}=  Get Request  server  ${endpoint}  ${request_headers}
+    ${rsp}=  Get Request  server  ${endpoint}  params=${request_params}  headers=${request_headers}
     Log  ${rsp.text}
     Should Be Equal As Strings  ${rsp.status_code}  200
     Run Keyword If   ${response_status_message != None}
@@ -134,8 +160,11 @@ Send GET Expect Success
     ...              Verify Response Body  ${response_body}  ${rsp.json()}
 
 Send GET Expect Failure
-    [Arguments]  ${endpoint}=${ENDPOINT}  ${request_headers}=${None}  ${response_code}=404
-    ${rsp}=  Get Request  server  ${endpoint}  ${request_headers}
+    [Arguments]  ${endpoint}=${ENDPOINT}
+    ...          ${request_params}=${None}
+    ...          ${request_headers}=${None}
+    ...          ${response_code}=404
+    ${rsp}=  Get Request  server  ${endpoint}  params=${request_params}  headers=${request_headers}
     Should Be Equal As Strings  ${rsp.status_code}  ${response_code}
 
 Send POST Expect Success
