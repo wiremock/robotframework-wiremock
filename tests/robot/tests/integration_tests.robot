@@ -42,6 +42,21 @@ Success On Expected GET With Path Pattern
     Create Mock Mapping  ${req}  ${rsp}
     Send GET Expect Success  /endpoint-extended/api
 
+Success On Expected GET With Header Matching
+    &{match_headers}=  Create Dictionary  header1=value1  header2=value2
+    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}  headers=${match_headers}
+    &{rsp}=  Create Mock Response  status=200
+    Create Mock Mapping  ${req}  ${rsp}
+    Send GET Expect Success  ${ENDPOINT}  request_headers=${match_headers}
+
+Failure On GET With Mismatched Header
+    &{match_headers}=  Create Dictionary  header1=value1  header2=value2
+    &{mismatched_headers}=  Create Dictionary  header1=mismatch  header2=value2
+    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}  headers=${match_headers}
+    &{rsp}=  Create Mock Response  status=200
+    Create Mock Mapping  ${req}  ${rsp}
+    Send GET Expect Failure  ${ENDPOINT}  request_headers=${mismatched_headers}
+
 Success On Expected GET With Specified Data
     Create Mock Mapping With Data  ${MOCK_DATA}
     Send GET Expect Success  ${ENDPOINT}
@@ -97,16 +112,21 @@ Reset Wiremock
     Reset Mock Mappings
 
 Send GET Expect Success
-    [Arguments]  ${endpoint}=${ENDPOINT}  ${response_headers}=${None}  ${response_body}=${None}
-    ${rsp}=  Get Request  server  ${endpoint}
+    [Arguments]  ${endpoint}=${ENDPOINT}
+    ...          ${request_headers}=${None}
+    ...          ${response_headers}=${None}
+    ...          ${response_body}=${None}
+    ${rsp}=  Get Request  server  ${endpoint}  ${request_headers}
     Should Be Equal As Strings  ${rsp.status_code}  200
-    Run Keyword If   ${response_headers != None}  Verify Response Headers  ${response_headers}  ${rsp.headers}
+    Run Keyword If   ${response_headers != None}
+    ...              Verify Response Headers  ${response_headers}  ${rsp.headers}
     Log  ${rsp.text}
-    Run Keyword If   ${response_body != None}  Verify Response Body  ${response_body}  ${rsp.json()}
+    Run Keyword If   ${response_body != None}
+    ...              Verify Response Body  ${response_body}  ${rsp.json()}
 
 Send GET Expect Failure
-    [Arguments]  ${endpoint}=${ENDPOINT}  ${response_code}=404
-    ${rsp}=  Get Request  server  ${endpoint}
+    [Arguments]  ${endpoint}=${ENDPOINT}  ${request_headers}=${None}  ${response_code}=404
+    ${rsp}=  Get Request  server  ${endpoint}  ${request_headers}
     Should Be Equal As Strings  ${rsp.status_code}  ${response_code}
 
 Send POST Expect Success
