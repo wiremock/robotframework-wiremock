@@ -30,7 +30,6 @@ Failure On GET With Mismatched Method
     Send POST Expect Failure  ${ENDPOINT}
 
 Failure On GET With Mismatched Endpoint
-    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
     Create Mock Mapping  ${DEF_GET_REQ}  ${DEF_GET_RSP}
     Send GET Expect Failure  /mismatched
 
