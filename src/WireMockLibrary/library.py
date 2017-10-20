@@ -80,12 +80,15 @@ class WireMockLibrary(object):
 
         return req
 
-    def create_mock_response(self, status, headers=None, json_body=None, template=False):
+    def create_mock_response(self, status, status_message=None,
+                             headers=None, json_body=None, template=False):
         """Creates a mock response to be used by wiremock.
 
         Returns the response in a dictionary format.
 
         `status` is the HTTP status code of the response
+
+        `status_message` is the HTTP status message of the response
 
         `headers` is a dictionary of headers to be added to the response
 
@@ -97,6 +100,9 @@ class WireMockLibrary(object):
         rsp = {}
         rsp['status'] = int(status)
         rsp['headers'] = headers
+
+        if status_message:
+            rsp['statusMessage'] = status_message
 
         if json_body:
             rsp['jsonBody'] = json_body
@@ -119,22 +125,28 @@ class WireMockLibrary(object):
 
         self.create_mock_mapping_with_data(data)
 
-    def create_default_mock_mapping(self, method, url, status=200,
-                                    response_headers=None, response_body=None):
+    def create_default_mock_mapping(self, method, url, status=200, status_message=None,
+                                    response_headers=None, response_body=None, template=False):
         """Creates a default expectation to be used by wiremock.
 
         `method` is the HTTP method of the mocked endpoint
 
-        `url` is the url of the mocked endpoint, e.g. /api
+        `url` is the url pattern of the mocked endpoint, e.g. /.*api.*
 
         `status` is the HTTP status code of the response
+
+        `status_message` is the HTTP status message of the response
 
         `response_headers` is a dictionary of headers to be added to the response
 
         `response_body` is a dictonary of JSON attribute(s) to be added to the response body
+
+        `template` is a boolean value which specifies whether to use templating in the response,
+        e.g. for copying a parameter, header or body value from the request to the response
         """
-        req = self.create_mock_request_matcher(method, url)
-        rsp = self.create_mock_response(status, response_headers, response_body)
+        req = self.create_mock_request_matcher(method, url, url_match_type='urlPathPattern')
+        rsp = self.create_mock_response(status, status_message,
+                                        response_headers, response_body, template)
         self.create_mock_mapping(req, rsp)
 
     def create_mock_mapping_with_data(self, data):

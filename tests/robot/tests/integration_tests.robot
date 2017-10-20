@@ -61,6 +61,12 @@ Success On Expected GET With Specified Data
     Create Mock Mapping With Data  ${MOCK_DATA}
     Send GET Expect Success  ${ENDPOINT}
 
+Success On Expected GET With Status Message
+    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
+    &{rsp}=  Create Mock Response  status=200  status_message=Ok
+    Create Mock Mapping  ${req}  ${rsp}
+    Send GET Expect Success  ${ENDPOINT}  response_status_message=Ok
+
 Success On Expected GET With Response Body
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
     &{rsp}=  Create Mock Response  status=200  headers=${HEADERS}  json_body=${BODY}
@@ -114,13 +120,16 @@ Reset Wiremock
 Send GET Expect Success
     [Arguments]  ${endpoint}=${ENDPOINT}
     ...          ${request_headers}=${None}
+    ...          ${response_status_message}=${None}
     ...          ${response_headers}=${None}
     ...          ${response_body}=${None}
     ${rsp}=  Get Request  server  ${endpoint}  ${request_headers}
+    Log  ${rsp.text}
     Should Be Equal As Strings  ${rsp.status_code}  200
+    Run Keyword If   ${response_status_message != None}
+    ...              Should Be Equal As Strings  ${response_status_message}  ${rsp.reason}
     Run Keyword If   ${response_headers != None}
     ...              Verify Response Headers  ${response_headers}  ${rsp.headers}
-    Log  ${rsp.text}
     Run Keyword If   ${response_body != None}
     ...              Verify Response Body  ${response_body}  ${rsp.json()}
 
