@@ -98,7 +98,7 @@ Success On Default GET Mapping
     Send GET Expect Success  ${ENDPOINT}
 
 Success On Default GET Mapping With Response Body
-    Create Default Mock Mapping  GET  ${ENDPOINT}  response_headers=${HEADERS}  response_body=${BODY}
+    Create Default Mock Mapping  GET  /.*point.*  response_headers=${HEADERS}  response_body=${BODY}
     Send GET Expect Success  ${ENDPOINT}  response_headers=${HEADERS}  response_body=${BODY}
 
 Success On Templated Response
