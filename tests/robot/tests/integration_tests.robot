@@ -36,6 +36,12 @@ Failure On GET With Mismatched Endpoint
     Create Mock Mapping  ${req}  ${rsp}
     Send GET Expect Failure  /mismatched
 
+Success On Expected GET With Path Pattern
+    &{req}=  Create Mock Request Matcher  GET  /endpoint.*  url_match_type=urlPathPattern
+    &{rsp}=  Create Mock Response  status=200
+    Create Mock Mapping  ${req}  ${rsp}
+    Send GET Expect Success  /endpoint-extended/api
+
 Success On Expected GET With Specified Data
     Create Mock Mapping With Data  ${MOCK_DATA}
     Send GET Expect Success  ${ENDPOINT}

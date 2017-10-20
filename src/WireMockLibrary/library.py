@@ -43,20 +43,29 @@ class WireMockLibrary(object):
         self.base_url = base_url
         self.session = requests.Session()
 
-    def create_mock_request_matcher(self, method, url, json_body=None):
+    def create_mock_request_matcher(self, method, url,
+                                    url_match_type='urlPath',
+                                    json_body=None):
         """Creates a mock request matcher to be used by wiremock.
 
         Returns the request matcher in a dictionary format.
 
         `method` is the HTTP method of the mocked endpoint
 
-        `url` is the url of the mocked endpoint, e.g. /api
+        `url` is the url or url pattern of the mocked endpoint, e.g. /api or /api.*
+
+        `url_match_type` is the wiremock url match pattern to use. Applicable values
+        are:
+        - `url` (match url and query params)
+        - `urlPattern` (match url and query params with regex)
+        - `urlPath` (match url)
+        - `urlPathPattern` (match url with regex)
 
         `json_body` is a dictionary of the json attribute(s) to match
         """
         req = {}
         req['method'] = method
-        req['url'] = url
+        req[url_match_type] = url
 
         if json_body:
             req['bodyPatterns'] = [{'equalToJson': json.dumps(json_body),
