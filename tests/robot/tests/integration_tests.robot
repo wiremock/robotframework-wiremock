@@ -73,6 +73,18 @@ Failure On GET With Mismatched Header
     Create Mock Mapping  ${req}  ${DEF_GET_RSP}
     Send GET Expect Failure  ${ENDPOINT}  request_headers=${mismatched_headers}
 
+Success On Expected GET With Cookie Matching
+    &{match_cookies}=  Create Dictionary  cookie1=value1  cookie2=value2
+    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}  cookies=${match_cookies}
+    Create Mock Mapping  ${req}  ${DEF_GET_RSP}
+    Send GET Expect Success  ${ENDPOINT}
+
+Failure On GET With Mismatched Cookies
+    &{mismatched_cookies}=  Create Dictionary  cookie1=mismatched
+    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}  cookies=${mismatched_cookies}
+    Create Mock Mapping  ${req}  ${DEF_GET_RSP}
+    Send GET Expect Failure  ${ENDPOINT}
+
 Success On Expected GET With Specified Data
     Create Mock Mapping With Data  ${MOCK_DATA}
     Send GET Expect Success  ${ENDPOINT}
@@ -119,7 +131,8 @@ Success On Templated Response
 
 *** Keywords ***
 Create Sessions And Default Mappings
-    Create Session  server  ${WIREMOCK_URL}
+    &{match_cookies}=  Create Dictionary  cookie1=value1  cookie2=value2
+    Create Session  server  ${WIREMOCK_URL}  cookies=${match_cookies}
     Create Mock Session  ${WIREMOCK_URL}
 
     &{DEF_GET_REQ}=  Create Mock Request Matcher  GET  ${ENDPOINT}
@@ -134,6 +147,19 @@ Create Sessions And Default Mappings
 Reset Wiremock
     Reset Mock Mappings
 
+Send GET
+    [Arguments]  ${endpoint}=${ENDPOINT}
+    ...          ${request_params}=${None}
+    ...          ${request_headers}=${None}
+    ...          ${response_code}=200
+    ${rsp}=  Get Request  server
+    ...                   ${endpoint}
+    ...                   params=${request_params}
+    ...                   headers=${request_headers}
+    Log  ${rsp.text}
+    Should Be Equal As Strings  ${rsp.status_code}  ${response_code}
+    [Return]  ${rsp}
+
 Send GET Expect Success
     [Arguments]  ${endpoint}=${ENDPOINT}
     ...          ${request_params}=${None}
@@ -141,9 +167,7 @@ Send GET Expect Success
     ...          ${response_status_message}=${None}
     ...          ${response_headers}=${None}
     ...          ${response_body}=${None}
-    ${rsp}=  Get Request  server  ${endpoint}  params=${request_params}  headers=${request_headers}
-    Log  ${rsp.text}
-    Should Be Equal As Strings  ${rsp.status_code}  200
+    ${rsp}=  Send GET  ${endpoint}  ${request_params}  ${request_headers}
     Run Keyword If   ${response_status_message != None}
     ...              Should Be Equal As Strings  ${response_status_message}  ${rsp.reason}
     Run Keyword If   ${response_headers != None}
@@ -156,8 +180,7 @@ Send GET Expect Failure
     ...          ${request_params}=${None}
     ...          ${request_headers}=${None}
     ...          ${response_code}=404
-    ${rsp}=  Get Request  server  ${endpoint}  params=${request_params}  headers=${request_headers}
-    Should Be Equal As Strings  ${rsp.status_code}  ${response_code}
+    Send GET  ${endpoint}  ${request_params}  ${request_headers}  ${response_code}
 
 Send POST Expect Success
     [Arguments]  ${endpoint}=${ENDPOINT}  ${body}=${BODY}  ${response_code}=201

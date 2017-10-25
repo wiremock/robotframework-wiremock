@@ -44,8 +44,8 @@ class WireMockLibrary(object):
         self.session = requests.Session()
 
     def create_mock_request_matcher(self, method, url, url_match_type='urlPath',
-                                    query_parameters=None, headers=None, json_body=None,
-                                    regex_matching=False):
+                                    query_parameters=None, headers=None, cookies=None,
+                                    json_body=None, regex_matching=False):
         """Creates a mock request matcher to be used by wiremock.
 
         Returns the request matcher in a dictionary format.
@@ -65,6 +65,8 @@ class WireMockLibrary(object):
 
         `headers` is a dictionary containing headers to match (case-insensitive matching)
 
+        `cookies` is a dictionary containing cookies to match
+
         `json_body` is a dictionary of the json attribute(s) to match
 
         `regex_matching` is a boolean value which, if enabled, uses regex to match
@@ -83,6 +85,10 @@ class WireMockLibrary(object):
         if headers:
             req['headers'] = {key: {match_type: value, 'caseInsensitive': True}
                               for (key, value) in headers.items()}
+
+        if cookies:
+            req['cookies'] = {key: {match_type: value}
+                              for (key, value) in cookies.items()}
 
         if json_body:
             req['bodyPatterns'] = [{'equalToJson': json.dumps(json_body),
