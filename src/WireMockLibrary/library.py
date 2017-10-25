@@ -77,14 +77,12 @@ class WireMockLibrary(object):
         match_type = 'matches' if regex_matching else 'equalTo'
 
         if query_parameters:
-            req['queryParameters'] = {}
-            for key, value in query_parameters.items():
-                req['queryParameters'][key] = {match_type: value}
+            req['queryParameters'] = {key: {match_type: value}
+                                      for (key, value) in query_parameters.items()}
 
         if headers:
-            req['headers'] = {}
-            for key, value in headers.items():
-                req['headers'][key] = {match_type: value, 'caseInsensitive': True}
+            req['headers'] = {key: {match_type: value, 'caseInsensitive': True}
+                              for (key, value) in headers.items()}
 
         if json_body:
             req['bodyPatterns'] = [{'equalToJson': json.dumps(json_body),
