@@ -3,6 +3,7 @@
 *.log
 *.html
 .cache/
+robotframework_wiremock.egg-info
 logs
 dist
 MANIFEST
