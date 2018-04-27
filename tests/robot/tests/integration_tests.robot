@@ -129,7 +129,7 @@ Success On Templated Response
     Create Mock Mapping  ${req}  ${rsp}
     Send GET Expect Success  /templated  response_body=${response_body}
 
-Requests Are Obtained For Mocket Path
+Requests Are Obtained For Path
     Create Mock Mapping  ${DEF_GET_REQ}  ${DEF_GET_RSP}
     Send GET Expect Success  ${ENDPOINT}
     Create Mock Mapping  ${DEF_POST_REQ}  ${DEF_POST_RSP}
@@ -145,7 +145,7 @@ Requests Are Obtained For Mocket Path
     Should Be Equal As Strings  ${reqs[1]['url']}  ${ENDPOINT}
     Should Be Equal As Strings  ${reqs[1]['method']}  POST
 
-Requests Are Obtained For Mocket Path And Method
+Requests Are Obtained For Path And Method
     Create Mock Mapping  ${DEF_GET_REQ}  ${DEF_GET_RSP}
     Send GET Expect Success  ${ENDPOINT}
     Create Mock Mapping  ${DEF_POST_REQ}  ${DEF_POST_RSP}
@@ -159,7 +159,7 @@ Requests Are Obtained For Mocket Path And Method
     Should Be Equal As Strings  ${reqs[0]['url']}  ${ENDPOINT}
     Should Be Equal As Strings  ${reqs[0]['method']}  POST
 
-Previous Request Is Obtained For Mocked Path
+Previous Request Is Obtained For Path
     Create Mock Mapping  ${DEF_GET_REQ}  ${DEF_GET_RSP}
     Send GET Expect Success  ${ENDPOINT}
     Create Default Mock Mapping  GET  /unmatched
@@ -168,7 +168,7 @@ Previous Request Is Obtained For Mocked Path
     ${req}=  Get Previous Request  ${ENDPOINT}
     Should Be Equal As Strings  ${req['url']}  ${ENDPOINT}
 
-Previous Request Body Is Obtained For Mocked Path
+Previous Request Body Is Obtained For Path
     Create Mock Mapping  ${DEF_POST_REQ}  ${DEF_POST_RSP}
     Send POST Expect Success  ${ENDPOINT}
 
