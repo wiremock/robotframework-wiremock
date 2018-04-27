@@ -129,6 +129,53 @@ Success On Templated Response
     Create Mock Mapping  ${req}  ${rsp}
     Send GET Expect Success  /templated  response_body=${response_body}
 
+Requests Are Obtained For Mocket Path
+    Create Mock Mapping  ${DEF_GET_REQ}  ${DEF_GET_RSP}
+    Send GET Expect Success  ${ENDPOINT}
+    Create Mock Mapping  ${DEF_POST_REQ}  ${DEF_POST_RSP}
+    Send POST Expect Success  ${ENDPOINT}
+    Create Default Mock Mapping  GET  /unmatched
+    Send GET Expect Success  /unmatched
+
+    @{reqs}=  Get Requests  ${ENDPOINT}
+    ${count}=  Get Length  ${reqs}
+    Should Be Equal As Strings  ${count}  2
+    Should Be Equal As Strings  ${reqs[0]['url']}  ${ENDPOINT}
+    Should Be Equal As Strings  ${reqs[0]['method']}  GET
+    Should Be Equal As Strings  ${reqs[1]['url']}  ${ENDPOINT}
+    Should Be Equal As Strings  ${reqs[1]['method']}  POST
+
+Requests Are Obtained For Mocket Path And Method
+    Create Mock Mapping  ${DEF_GET_REQ}  ${DEF_GET_RSP}
+    Send GET Expect Success  ${ENDPOINT}
+    Create Mock Mapping  ${DEF_POST_REQ}  ${DEF_POST_RSP}
+    Send POST Expect Success  ${ENDPOINT}
+    Create Default Mock Mapping  GET  /unmatched
+    Send GET Expect Success  /unmatched
+
+    @{reqs}=  Get Requests  ${ENDPOINT}  method=POST
+    ${count}=  Get Length  ${reqs}
+    Should Be Equal As Strings  ${count}  1
+    Should Be Equal As Strings  ${reqs[0]['url']}  ${ENDPOINT}
+    Should Be Equal As Strings  ${reqs[0]['method']}  POST
+
+Previous Request Is Obtained For Mocked Path
+    Create Mock Mapping  ${DEF_GET_REQ}  ${DEF_GET_RSP}
+    Send GET Expect Success  ${ENDPOINT}
+    Create Default Mock Mapping  GET  /unmatched
+    Send GET Expect Success  /unmatched
+
+    ${req}=  Get Previous Request  ${ENDPOINT}
+    Should Be Equal As Strings  ${req['url']}  ${ENDPOINT}
+
+Previous Request Body Is Obtained For Mocked Path
+    Create Mock Mapping  ${DEF_POST_REQ}  ${DEF_POST_RSP}
+    Send POST Expect Success  ${ENDPOINT}
+
+    ${req_body}=  Get Previous Request Body  ${ENDPOINT}
+    Should Be Equal As Strings  ${req_body}  ${BODY}
+    Log  ${req_body}
+
 *** Keywords ***
 Create Sessions And Default Mappings
     &{match_cookies}=  Create Dictionary  cookie1=value1  cookie2=value2
@@ -146,6 +193,7 @@ Create Sessions And Default Mappings
 
 Reset Wiremock
     Reset Mock Mappings
+    Reset Request Log
 
 Send GET
     [Arguments]  ${endpoint}=${ENDPOINT}

@@ -148,7 +148,7 @@ class WireMockLibrary(object):
 
         `method` is the HTTP method of the mocked endpoint
 
-        `url` is the url pattern of the mocked endpoint, e.g. /.*api.*
+        `url` is the url pattern of the mocked endpoint(s), e.g. /.*api.*
 
         `status` is the HTTP status code of the response
 
@@ -174,10 +174,51 @@ class WireMockLibrary(object):
         """
         self._send_request("/__admin/mappings", data)
 
+    def get_requests(self, url, method=None):
+        """Returns an array containing all requests received by wiremock for a given url pattern.
+
+        `url` is the url pattern of the endpoint(s), e.g. /.*api.*
+
+        `method` is the HTTP method of the requests
+        """
+        data = {}
+
+        if method:
+            data['method'] = method
+
+        data['urlPathPattern'] = url
+        rsp = self._send_request("/__admin/requests/find", data)
+        return rsp.json()['requests']
+
+    def get_previous_request(self, url, method=None):
+        """Returns the last request received by wiremock for a given url pattern.
+
+        `url` is the url pattern of the endpoint(s), e.g. /.*api.*
+
+        `method` is the HTTP method of the request
+        """
+        return self.get_requests(url, method)[-1]
+
+    def get_previous_request_body(self, url, method=None):
+        """Returns the body of the last request received by wiremock for a given url pattern
+        in dictionary form.
+
+        `url` is the url pattern of the endpoint(s), e.g. /.*api.*
+
+        `method` is the HTTP method of the request
+        """
+        body = self.get_requests(url, method)[-1]['body']
+        return json.loads(body)
+
     def reset_mock_mappings(self):
         """Resets all mock mappings on the wiremock server.
         """
         self._send_request("/__admin/mappings/reset")
+
+    def reset_request_log(self):
+        """Resets all logged requests on the wiremock server.
+        """
+        self._send_request("/__admin/requests/reset")
 
     def _send_request(self, path, data=None):
         if isinstance(data, dict):
