@@ -98,7 +98,7 @@ class WireMockLibrary(object):
         return req
 
     def create_mock_response(self, status, status_message=None,
-                             headers=None, json_body=None, template=False):
+                             headers=None, json_body=None, bodyFileName=None, body=None, template=False):
         """Creates a mock response to be used by wiremock.
 
         Returns the response in a dictionary format.
@@ -123,7 +123,13 @@ class WireMockLibrary(object):
 
         if json_body:
             rsp['jsonBody'] = json_body
+                
+        if bodyFileNeme:
+            rsp['bodyFileName'] = bodyFileName
 
+        if body:
+            rsp['body'] = body
+            
         if template:
             rsp['transformers'] = ['response-template']
 
