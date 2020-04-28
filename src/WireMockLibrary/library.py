@@ -125,7 +125,7 @@ class WireMockLibrary(object):
             rsp['statusMessage'] = status_message
 
         if response_type:
-            resp[response_type] = response
+            rsp[response_type] = response
             
         if template:
             rsp['transformers'] = ['response-template']
