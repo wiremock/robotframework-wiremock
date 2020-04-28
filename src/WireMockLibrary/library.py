@@ -98,7 +98,7 @@ class WireMockLibrary(object):
         return req
 
     def create_mock_response(self, status, status_message=None,
-                             headers=None, json_body=None, bodyFileName=None, body=None, template=False):
+                             headers=None, response_type=None, response=None template=False):
         """Creates a mock response to be used by wiremock.
 
         Returns the response in a dictionary format.
@@ -109,7 +109,10 @@ class WireMockLibrary(object):
 
         `headers` is a dictionary of headers to be added to the response
 
-        `json_body` is a dictonary of JSON attribute(s) to be added to the response body
+        `response_type` must be one off: body, base64body, jsonBody or bodyFileName
+        
+        'response' contains the string or object suitable for the chosen responsetype, see response under
+        http://wiremock.org/docs/api/#tag/Stub-Mappings/paths/~1__admin~1mappings/post
 
         `template` is a boolean value which specifies whether to use templating in the response,
         e.g. for copying a parameter, header or body value from the request to the response
@@ -121,14 +124,8 @@ class WireMockLibrary(object):
         if status_message:
             rsp['statusMessage'] = status_message
 
-        if json_body:
-            rsp['jsonBody'] = json_body
-                
-        if bodyFileNeme:
-            rsp['bodyFileName'] = bodyFileName
-
-        if body:
-            rsp['body'] = body
+        if response_type:
+            resp[response_type] = response
             
         if template:
             rsp['transformers'] = ['response-template']
