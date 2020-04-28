@@ -98,7 +98,7 @@ class WireMockLibrary(object):
         return req
 
     def create_mock_response(self, status, status_message=None,
-                             headers=None, response_type=None, response=None template=False):
+                             headers=None, response_type=None, response=None, template=False):
         """Creates a mock response to be used by wiremock.
 
         Returns the response in a dictionary format.
