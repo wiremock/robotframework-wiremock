@@ -229,7 +229,7 @@ class WireMockLibrary(object):
         else:
             data_dump = data
 
-        url = urljoin(self.base_url, path)
+        url = self.base_url + path
 
         logger.debug("url: {}, data: {}".format(url, data_dump))
         rsp = self.session.post(url, data=data_dump, timeout=5.0)
