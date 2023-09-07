@@ -1,0 +1,49 @@
+name: Release to PyPi
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: pypi_secret
+      url: https://pypi.org/p/robotframework-wiremock
+    permissions:
+      id-token: write
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install python-docx
+          # https://discuss.python.org/t/getting-requirements-to-build-wheel-did-not-run-successfully-exit-code-1/30365
+          echo "Cython<3" > cython_constraint.txt
+          PIP_CONSTRAINT=cython_constraint.txt pip install "ai-core-sdk[aicore-content]"
+          make setup
+          make help
+
+      - name: Run Tests
+        run: |
+          make tester/test
+
+      - name: Run Lint
+        run: |
+          make lint
+
+      - name: Package the release
+        run: | 
+          python setup.py sdist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        
+  
