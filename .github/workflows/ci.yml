@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install python-docx
+          # https://discuss.python.org/t/getting-requirements-to-build-wheel-did-not-run-successfully-exit-code-1/30365
+          echo "Cython<3" > cython_constraint.txt
+          PIP_CONSTRAINT=cython_constraint.txt pip install "ai-core-sdk[aicore-content]"
+          make setup
+          make help
+
+      - name: Run Tests
+        run: |
+          make tester/test
+
+      - name: Run Lint
+        run: |
+          make lint
+      
