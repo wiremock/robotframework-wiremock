@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.7", "3.11"]
+        python-version: ["3.11"]
 
     steps:
       - uses: actions/checkout@v3
@@ -25,6 +25,9 @@ jobs:
       - name: Install dependencies
         run: |
           pip install python-docx
+          # https://discuss.python.org/t/getting-requirements-to-build-wheel-did-not-run-successfully-exit-code-1/30365
+          echo "Cython<3" > cython_constraint.txt
+          PIP_CONSTRAINT=cython_constraint.txt pip install "ai-core-sdk[aicore-content]"
           make setup
           make help
 
