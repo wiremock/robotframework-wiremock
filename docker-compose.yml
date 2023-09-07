@@ -1,7 +1,7 @@
 version: '2'
 services:
   wiremock:
-    image: rodolpheche/wiremock:2.21.0
+    image: wiremock/wiremock:2.35.1-1
     command: --local-response-templating
   tester:
     build:
